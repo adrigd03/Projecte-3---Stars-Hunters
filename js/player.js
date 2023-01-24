@@ -71,7 +71,7 @@ function detectarEstrella(){
     for(var x = 1; x < estrelles_id; x++){
         try {
             if(intersectRect(document.getElementById('e'+ '' + x),destructor.nau)){
-                alert('jjj');
+                
                 document.getElementById('e'+ '' + x).remove();
             }
             

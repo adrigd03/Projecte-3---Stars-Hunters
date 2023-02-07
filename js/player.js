@@ -1,7 +1,7 @@
 "use strict";
 
 ///////////////////////////////////////////////////////////
-// Alumnes: Adrián García Domínguez, Abel Sturm Aumedes
+// Alumnes: Adrián García Domínguez, Sergi Triadó
 ///////////////////////////////////////////////////////////
 
 const FILES = 5;		// Nombre de files de l'exèrcit dels aliens
@@ -11,8 +11,6 @@ let destructor;
 let exercit;
 let tecles = { 0x27: false, 68: false, 0x25: false, 65: false, 38:false, 87: false, 83:false,40:false };
 
-const WIDTH = 640;	// Amplada de l'àrea de joc
-const HEIGHT = 480;	// Alçada de l'àrea de joc
 
 class Destructor {
 	constructor() {

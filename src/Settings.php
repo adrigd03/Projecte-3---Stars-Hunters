@@ -48,6 +48,12 @@
         public function flush_players(){
             $this->players = array();
         }
+        //Calcula la posició de les següents estrelles que apareixeran
+         public function posEstrella(){
+            $posicio['x'] = rand(5,$this->height);
+            $posicio['y'] = rand(5,$this->width);
+             return json_encode($posicio);
+        }
 
     }
 ?>

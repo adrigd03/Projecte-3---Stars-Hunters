@@ -18,8 +18,6 @@ let tecles = {
     40: false
 };
 
-const WIDTH = 640; // Amplada de l'àrea de joc
-const HEIGHT = 480; // Alçada de l'àrea de joc
 
 class Destructor {
     constructor() {
@@ -155,6 +153,7 @@ function moviment(e) {
             break;
     }
     detectarEstrella();
+    socket.send(JSON.stringify({x:destructor.xPos,y:destructor.yPos}));
 }
 
 
@@ -206,12 +205,13 @@ function tecla(e) {
 }
 
 
-$(document).ready(function() {
-    var socket = new WebSocket('ws://localhost:8080');
+$(function() {
+    const socket = new WebSocket('ws://localhost:8080');
     console.log(socket);
 
     socket.onopen = function(event) {
         console.log('Connection opened');
+        socket.send('hola');
     };
 
     socket.onmessage = function(event) {

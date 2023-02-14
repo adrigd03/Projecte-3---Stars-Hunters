@@ -13,8 +13,6 @@ function administrar(){
     joc.setAttribute("height", HEIGHT);
     joc.setAttribute("viewBox", "0 0 " + WIDTH + " " + HEIGHT);
 
-    console.log(joc);
-
     var camp = document.getElementById("camp").style;
     camp.width = WIDTH + "px";
     camp.height = HEIGHT + "px";

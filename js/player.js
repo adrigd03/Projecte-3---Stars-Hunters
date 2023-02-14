@@ -206,6 +206,25 @@ function tecla(e) {
 }
 
 
+$(document).ready(function() {
+    var socket = new WebSocket('ws://localhost:8080');
+    console.log(socket);
 
+    socket.onopen = function(event) {
+        console.log('Connection opened');
+    };
+
+    socket.onmessage = function(event) {
+        console.log('Message received: ' + event.data);
+    };
+
+    socket.onerror = function(event) {
+        console.log('Error: ' + event.data);
+    };
+
+    socket.onclose = function(event) {
+        console.log('Connection closed');
+    };
+});
 
 init();

@@ -8,9 +8,11 @@ use StarHunters\Settings;
  class Game implements MessageComponentInterface{
     protected $clients;
     protected $admin;
+    protected $settings;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
+        $this->settings = new Settings();
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -18,6 +20,7 @@ use StarHunters\Settings;
             $this->admin = $conn;
         }
         $this->clients->attach($conn);
+        $this->settings->addPlayer($conn);
 
         echo "S'ha unit un jugador" . $conn->resourceId . "\n";
         
@@ -31,7 +34,7 @@ use StarHunters\Settings;
         if($from == $this->admin){
             //Si es el missatge diu estrella enviar posició de estrella a tots els jugadors
             if($msg == 'estrella'){
-                
+                $this->broadcast($this->settings->posEstrella());
             }
 
         }
@@ -46,8 +49,11 @@ use StarHunters\Settings;
     public function onError(ConnectionInterface $conn, \Exception $e) {
     }
 
-    
-   
+    public function broadcast($msg){
+        foreach ($this->clients as $client) {
+            $client->send($msg);
+        }
+    }
 
  }
 ?>

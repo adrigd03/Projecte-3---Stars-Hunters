@@ -18,7 +18,6 @@ let tecles = {
     40: false
 };
 
-
 class Destructor {
     constructor() {
         // Inicialitzar valors

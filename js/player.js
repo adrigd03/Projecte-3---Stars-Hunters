@@ -18,9 +18,6 @@ let tecles = {
     40: false
 };
 
-const WIDTH = 640; // Amplada de l'àrea de joc
-const HEIGHT = 480; // Alçada de l'àrea de joc
-
 class Destructor {
     constructor() {
         // Inicialitzar valors

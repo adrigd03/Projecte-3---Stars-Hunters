@@ -30,13 +30,18 @@ use StarHunters\Settings;
         if($msg == 'admin'){
             $this->admin = $from;
         }
-
+        echo $msg;
         if($from == $this->admin){
             //Si es el missatge diu estrella enviar posició de estrella a tots els jugadors
             if($msg == 'estrella'){
                 $this->broadcast($this->settings->posEstrella());
             }
 
+        }
+
+        $msg = json_decode($msg);
+        if($msg->accio == 'BorrarEstrella'){
+            
         }
         $from->send('kjasvblh');
 
@@ -49,9 +54,11 @@ use StarHunters\Settings;
     public function onError(ConnectionInterface $conn, \Exception $e) {
     }
 
-    public function broadcast($msg){
+    public function broadcast($msg,$excludedClients = []){
         foreach ($this->clients as $client) {
-            $client->send($msg);
+            if(!in_array($client, $excludedClients)){
+                $client->send($msg);
+            }
         }
     }
 

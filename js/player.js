@@ -35,11 +35,11 @@ class Destructor {
 }
 
 class Estrella {
-    constructor() {
+    constructor(x,y) {
         // Inicialitzar valors
         
-        this.xPos = 5 + Math.floor(Math.random() * (WIDTH)); // Posició horitzontal de l'estrella
-        this.yPos = 5 + Math.floor(Math.random() * (HEIGHT)); // Posició vertical de l'estrella
+        this.xPos = x; // Posició horitzontal de l'estrella
+        this.yPos = y; // Posició vertical de l'estrella
 
         // Creem la el path de l'estrela i la coloquem
         this.estrella = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -71,8 +71,8 @@ function detectarEstrella(){
     for(var x = 1; x < estrelles_id; x++){
         try {
             if(intersectRect(document.getElementById('e'+ '' + x),destructor.nau)){
-                
                 document.getElementById('e'+ '' + x).remove();
+                socket.send(JSON.stringify({accio:'BorrarEstrella', id: x}));
             }
             
         } catch (error) {
@@ -213,8 +213,11 @@ $(function() {
         socket.send('hola');
     };
 
-    socket.onmessage = function(event) {
-        console.log('Message received: ' + event.data);
+    socket.onmessage = function(e) {
+        if(e.data.missatge == 'estrella'){
+            new Estrella(e.data.x,e.data.y);
+        }
+        console.log('Message received: ' + e.data);
     };
 
     socket.onerror = function(event) {

@@ -38,12 +38,13 @@ use StarHunters\Settings;
             }
 
         }
-
-        $msg = json_decode($msg);
-        if($msg->accio == 'BorrarEstrella'){
-            
+        //Comprobem si el missatge conté on objecte amb la accio BorrarEstrella i fem u broadcast de la estrella a borrar
+        $missatge = json_decode($msg);
+        if($missatge->accio == 'borrarEstrella'){
+            $resposta['accio'] = 'borrarEstrella';
+            $resposta['index'] = $missatge->index;
+            $this->broadcast(json_encode($resposta),[$from]);
         }
-        $from->send('kjasvblh');
 
         
     }

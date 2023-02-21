@@ -2,7 +2,10 @@
 
 document.getElementById("administrar").addEventListener("click", administrar, false);
 document.getElementById("aturar").addEventListener("click", aturar, false);
+$('#estrellas').on('click',estrella);
+
 let intervalEstrella;
+let socket;
 
 function administrar(){
     WIDTH = document.getElementById("amplada").value;
@@ -17,6 +20,7 @@ function administrar(){
     camp.width = WIDTH + "px";
     camp.height = HEIGHT + "px";
 
+
 }
 
 function aturar(){
@@ -27,10 +31,11 @@ function aturar(){
 //Aquesta funció és trucarà al començar la partida
 function estrella() { 
     intervalEstrella = setInterval(()=> {socket.send('estrella')},5000);
+
  }
 
 $(function() {
-    const socket = new WebSocket('ws://localhost:8080');
+    socket = new WebSocket('ws://localhost:8080');
     console.log(socket);
 
     socket.onopen = function(event) {
@@ -39,6 +44,7 @@ $(function() {
     };
 
     socket.onmessage = function(event) {
+        var m = JSON.parse(event.data);
         console.log('Message received: ' + event.data);
     };
 

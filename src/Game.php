@@ -30,11 +30,19 @@ use StarHunters\Settings;
         if($msg == 'admin'){
             $this->admin = $from;
         }
-        echo $msg;
+       
         if($from == $this->admin){
             //Si es el missatge diu estrella enviar posició de estrella a tots els jugadors
             if($msg == 'estrella'){
                 $this->broadcast($this->settings->posEstrella());
+                if($this -> settings -> getEstrelles() > 3){
+                    $resposta['accio'] = "estrellaCaducada";
+                    $this->broadcast(json_encode($resposta));
+                    $this -> settings -> setEstrelles();
+                    echo $this -> settings -> getEstrelles();
+
+
+                }
             }
 
         }
@@ -44,6 +52,8 @@ use StarHunters\Settings;
             $resposta['accio'] = 'borrarEstrella';
             $resposta['index'] = $missatge->index;
             $this->broadcast(json_encode($resposta),[$from]);
+
+            $this -> settings -> setEstrelles();
         }
 
         

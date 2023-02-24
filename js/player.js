@@ -10,34 +10,34 @@ const HEIGHT = 480
 let socket;
 let estrelles = [];
 let destructor;
+let interval;
+let intervalCooldown;
+let intervalTurbo;
+
 let tecles = {
-    0x27: false,
-    68: false,
-    0x25: false,
-    65: false,
-    38: false,
-    87: false,
-    83: false,
-    40: false
+    right: false,
+    left: false,
+    up: false,
+    down: false
 };
 
-$(document).keydown(moviment).keyup(tecla).click();
+$(document).keydown(detectarKeyDown).keyup(detectarKeyUp).click();
 
 
 class Destructor {
+
     constructor() {
         // Inicialitzar valors
         this.xPos = 320; // Posició horitzontal de la nau
-        this.yPos = 460; // Posició vertical de la nau
-
+        this.yPos = 400; // Posició vertical de la nau
+        this.x = 0;
+        this.y = 0;
+        this.speed = 4;
+        this.turbo = true;
         // Moure la nau a la posició inicial
         this.nau = document.getElementById("nau");
         this.nau.setAttribute("transform", "translate(" + this.xPos + " " + this.yPos + ")");
 
-    }
-
-    update() {
-        this.nau.setAttribute("transform", "translate(" + this.xPos + " " + this.yPos + ')');
     }
 }
 
@@ -67,7 +67,6 @@ destructor = new Destructor();
 
 $(function () {
     socket = new WebSocket('ws://localhost:8080');
-    console.log(socket);
 
     socket.onopen = function (event) {
         console.log('Connection opened');
@@ -81,7 +80,11 @@ $(function () {
             new Estrella(m.x, m.y);
         } else if (m.accio == 'borrarEstrella') {
             estrelles[m.index].remove();
-            estrelles.splice(m.index,1)
+            estrelles.splice(m.index, 1)
+            
+        }else if(m.accio == 'estrellaCaducada'){
+            estrelles[0].remove();
+            estrelles.splice(0,1);
         }
     };
 
@@ -100,8 +103,11 @@ function detectarEstrella() {
         try {
             if (intersectRect(estrella, destructor.nau)) {
                 estrella.remove();
-                socket.send(JSON.stringify({accio: 'borrarEstrella', index: index}));
-                estrelles.splice(index,1);
+                socket.send(JSON.stringify({
+                    accio: 'borrarEstrella',
+                    index: index
+                }));
+                estrelles.splice(index, 1);
             }
 
         } catch (error) {
@@ -123,115 +129,202 @@ function intersectRect(r1, r2) {
 }
 
 
-function moviment(e) {
+function detectarKeyDown(e) {
 
-    var moveVal = 5;
-    var code = e.keyCode;
-    switch (code) {
-        case (0x27):
-        case (68):
-            tecles[code] = true;
-            if (tecles[65] == false && tecles[0x25] == false) {
+    if (e.shiftKey) {
+        if (destructor.turbo) {
+            turbo();
+        }
 
-                if (movimentDiagonal(moveVal)) {
-                    if (destructor.xPos != WIDTH - 20) {
-                        destructor.xPos += moveVal;
-                        destructor.update();
-                    }
-                }
-            }
-            break;
-        case (0x25):
-        case (65):
-            tecles[code] = true;
-            if (movimentDiagonal(moveVal)) {
-                if (tecles[68] == false && tecles[0x27] == false) {
-                    if (destructor.xPos != 20) {
-                        destructor.xPos -= moveVal;
-                        destructor.nau.setAttribute('transform', 'translate(' + destructor.xPos + ' ' + destructor.yPos + ')');
-                    }
-                }
-            }
-            break;
-        case (87):
-        case (38):
-            tecles[code] = true;
-            if (movimentDiagonal(moveVal)) {
-                if (tecles[83] == false && tecles[40] == false) {
-                    if (destructor.yPos != 0) {
-                        destructor.yPos -= moveVal;
-                        destructor.nau.setAttribute('transform', 'translate(' + destructor.xPos + ' ' + destructor.yPos + ')');
-                    }
-                }
-            }
+    }
 
+    switch (e.key.toLowerCase()) {
+
+
+        case ('arrowright'):
+        case ('d'):
+            tecles.dreta = true;
             break;
-        case (83):
-        case (40):
-            tecles[code] = true;
-            if (movimentDiagonal(moveVal)) {
-                if (tecles[87] == false && tecles[38] == false) {
-                    if (destructor.yPos != HEIGHT) {
-                        destructor.yPos += moveVal;
-                        destructor.nau.setAttribute('transform', 'translate(' + destructor.xPos + ' ' + destructor.yPos + ')');
-                    }
-                }
-            }
+        case ('arrowleft'):
+        case ('a'):
+            tecles.esquerra = true;
+            break;
+        case ('w'):
+        case ('arrowup'):
+            tecles.up = true;
+            break;
+        case ('arrowdown'):
+        case ('s'):
+            tecles.down = true;
             break;
         default:
-            break;
+            return;
     }
+
+
+    calcMoviment();
+
+}
+
+function calcMoviment() {
+    let x = 0;
+    let y = 0;
+    let angle = 0;
+    let speed = destructor.speed;
+    if (tecles.dreta) {
+        x += speed;
+        angle = 90;
+    }
+    if (tecles.esquerra) {
+        x -= speed;
+        angle = -90;
+    }
+    if (tecles.up) {
+        y -= speed;
+        angle = 0;
+    }
+    if (tecles.down) {
+        y += speed;
+        angle = 180;
+    }
+    if (x != 0 && y != 0) {
+
+        if (tecles.dreta && tecles.up) {
+            x = Math.sqrt(speed  * speed / 2);
+            y = -(Math.sqrt(speed  * speed / 2));
+            angle = 45;
+        }
+        
+        if (tecles.dreta && tecles.down) {
+            x = Math.sqrt(speed  * speed / 2);
+            y = Math.sqrt(speed  * speed / 2);
+            angle = 135;
+        }
+        
+        if (tecles.esquerra && tecles.up) {
+            x = -(Math.sqrt(speed  * speed / 2));
+            y = -(Math.sqrt(speed  * speed / 2));
+            
+            angle = -45;
+        }
+        
+        if (tecles.esquerra && tecles.down) {
+            x = -(Math.sqrt(speed  * speed / 2));
+            y = Math.sqrt(speed  * speed / 2);
+            angle = -135;
+        }
+    }
+
+    if ((x == 0 && y == 0) || (x == destructor.x && y == destructor.y)) return;
+
+    clearInterval(interval);
+
+    interval = setInterval(() => {
+        moureNau(angle, x, y)
+    }, 20);
+
+
+
+}
+
+function moureNau(angle, x, y) {
+    if (y < 0)
+        if (!tecles.up) return;
+    if (y > 0)
+        if (!tecles.down) return;
+    if (x > 0)
+        if (!tecles.dreta) return;
+    if (x < 0)
+        if (!tecles.esquerra) return;
+
+
+    if(destructor.xPos + x < WIDTH - 20 && destructor.xPos + x > 20)  destructor.xPos += x;
+    
+    if( destructor.yPos + y < HEIGHT - 20 && destructor.yPos + y > 20) destructor.yPos += y;
+
+    destructor.x = x;
+    destructor.y = y;
+
+    $(destructor.nau).attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) rotate(${angle})`);
     detectarEstrella();
+
     socket.send(JSON.stringify({
+        accio: 'movimentNau',
         x: destructor.xPos,
         y: destructor.yPos
     }));
-}
-
-
-function movimentDiagonal(moveVal) {
-    //Moure arriba i dreta
-    if ((tecles[87] || tecles[38]) && (tecles[68] || tecles[0x27])) {
-        if (destructor.xPos != WIDTH - 20 && destructor.yPos != 0) {
-            destructor.xPos += moveVal;
-            destructor.yPos -= moveVal;
-            destructor.update();
-            return false;
-        }
-
-    }
-    //moure avall i dreta
-    else if ((tecles[83] || tecles[40]) && (tecles[0x28] || tecles[68])) {
-        if (destructor.xPos != WIDTH - 20 && destructor.yPos != HEIGHT) {
-            destructor.xPos += moveVal;
-            destructor.yPos += moveVal;
-            destructor.update();
-            $(destructor.nau)
-            return false;
-        }
-    }
-    //moure arriba i esquerra
-    else if ((tecles[87] || tecles[38]) && (tecles[0x25] || tecles[65])) {
-        if (destructor.xPos != 20 && destructor.yPos != 0) {
-            destructor.xPos -= moveVal;
-            destructor.yPos -= moveVal;
-            destructor.update();
-            return false;
-        }
-    }
-    //moure avall i esquerra
-    else if ((tecles[83] || tecles[40]) && (tecles[0x25] || tecles[65])) {
-        if (destructor.xPos != 20 && destructor.yPos != HEIGHT) {
-            destructor.xPos -= moveVal;
-            destructor.yPos += moveVal;
-            destructor.update();
-            return false;
-        }
-    }
-    return true;
-}
-
-function tecla(e) {
-    if (e.keyCode in tecles) tecles[e.keyCode] = false;
 
 }
+
+function detectarKeyUp(e) {
+
+    switch (e.key.toLowerCase()) {
+        case ('arrowright'):
+        case ('d'):
+            tecles.dreta = false;
+            calcMoviment();
+            break;
+        case ('arrowleft'):
+        case ('a'):
+            tecles.esquerra = false;
+            calcMoviment();
+            break;
+        case ('w'):
+        case ('arrowup'):
+            tecles.up = false;
+            calcMoviment();
+            break;
+        case ('arrowdown'):
+        case ('s'):
+            tecles.down = false;
+            calcMoviment();
+            break;
+        default:
+            return;
+    }
+}
+
+function countdownTurboActivat() {
+    var countdown = 5;
+    $('#mostrarTurbo').html('TURBOO ACTIVAAAT')
+    $('#countdownTurbo').html(countdown--);
+
+    intervalTurbo = setInterval(() => {
+        $('#countdownTurbo').html(countdown--);
+    },1000)
+  }
+
+function countdownTurboCooldown(){
+    var countdown = 10;
+
+    $('#countdownTurbo').html(countdown--);
+
+    $('#mostrarTurbo').html("El turbo s'està recargant");
+
+    intervalCooldown = setInterval(() =>{
+        $('#countdownTurbo').html(countdown--);
+    },1000)
+
+}
+
+function turbo() {
+    destructor.turbo = false;
+    destructor.speed = 6;
+    countdownTurboActivat();
+
+    setTimeout(() => {
+        destructor.speed = 4;
+        clearInterval(intervalTurbo);
+        countdownTurboCooldown();
+    }, 5000);
+    
+    setTimeout(() => {
+        destructor.turbo = true;
+        clearInterval(intervalCooldown);
+        $('#mostrarTurbo').html("El turbo està preparat");
+        $('#countdownTurbo').html("");
+    }, 15000);
+
+    calcMoviment();
+}
+

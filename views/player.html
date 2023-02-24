@@ -4,14 +4,22 @@
 	<title>SpaceInvaders</title>
 	<meta charset="UTF-8" />
 	<style>
-		div{border: 1px solid black;margin:0;padding:0;width:640px;height:480px;}
+		#areaJoc{border: 1px solid black;margin:0;padding:0;width:640px;height:480px;}
 	</style>
 	<script defer type="module" src="../js/player.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 
 <body>
-	<div>
+
+	<table>
+		<tr>
+			<td id="mostrarTurbo">El turbo està preparat</td>
+			<td id="countdownTurbo"></td>
+		</tr>
+	</table>
+
+	<div id="areaJoc">
 		<svg id="joc" width="640" height="480" viewbox="0 0 640 480">
 			<path id="nau" d="m19 12h-13v-4m-12 0v4h-13m22-12-2-10h-2l-2 10zm3 18v-2h13v-16m0 6-11-6-4-19h-8l-4 19-11 6m0-6v16h13v2m4-11h4v12h-4z" stroke="#00c000" stroke-width="2" fill="none"></path>
 		</svg>

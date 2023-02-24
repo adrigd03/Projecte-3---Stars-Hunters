@@ -24,8 +24,8 @@ function administrar(){
 }
 
 function aturar(){
-
     clearInterval(intervalEstrella);
+    //TODO reiniciar contador estrelals php
 }
 
 //Aquesta funció és trucarà al començar la partida

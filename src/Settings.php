@@ -3,10 +3,11 @@
 
     class Settings{
 
-        protected $height;
-        protected $width;
+        protected $height = 480;
+        protected $width = 640;
         protected $star_number;
         protected $players;
+        protected $estrelles = 0;
 
         public function __construct()
         {
@@ -19,6 +20,14 @@
 
         public function getWidth(){
             return $this->width;
+        }
+        public function getEstrelles(){
+            return $this->estrelles;
+        }
+
+    
+        public function setEstrelles(){
+            $this->estrelles--;
         }
 
         public function getStars(){
@@ -51,8 +60,9 @@
         //Calcula la posició de les següents estrelles que apareixeran
          public function posEstrella(){
             $posicio['accio'] = 'estrella';
-            $posicio['x'] = rand(5,$this->height);
-            $posicio['y'] = rand(5,$this->width);
+            $posicio['x'] = rand(5,$this->width);
+            $posicio['y'] = rand(5,$this->height);
+            $this ->estrelles++;
              return json_encode($posicio);
         }
 

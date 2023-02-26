@@ -81,10 +81,10 @@ $(function () {
         } else if (m.accio == 'borrarEstrella') {
             estrelles[m.index].remove();
             estrelles.splice(m.index, 1)
-            
-        }else if(m.accio == 'estrellaCaducada'){
+
+        } else if (m.accio == 'estrellaCaducada') {
             estrelles[0].remove();
-            estrelles.splice(0,1);
+            estrelles.splice(0, 1);
         }
     };
 
@@ -190,27 +190,27 @@ function calcMoviment() {
     if (x != 0 && y != 0) {
 
         if (tecles.dreta && tecles.up) {
-            x = Math.sqrt(speed  * speed / 2);
-            y = -(Math.sqrt(speed  * speed / 2));
+            x = Math.sqrt(speed * speed / 2);
+            y = -(Math.sqrt(speed * speed / 2));
             angle = 45;
         }
-        
+
         if (tecles.dreta && tecles.down) {
-            x = Math.sqrt(speed  * speed / 2);
-            y = Math.sqrt(speed  * speed / 2);
+            x = Math.sqrt(speed * speed / 2);
+            y = Math.sqrt(speed * speed / 2);
             angle = 135;
         }
-        
+
         if (tecles.esquerra && tecles.up) {
-            x = -(Math.sqrt(speed  * speed / 2));
-            y = -(Math.sqrt(speed  * speed / 2));
-            
+            x = -(Math.sqrt(speed * speed / 2));
+            y = -(Math.sqrt(speed * speed / 2));
+
             angle = -45;
         }
-        
+
         if (tecles.esquerra && tecles.down) {
-            x = -(Math.sqrt(speed  * speed / 2));
-            y = Math.sqrt(speed  * speed / 2);
+            x = -(Math.sqrt(speed * speed / 2));
+            y = Math.sqrt(speed * speed / 2);
             angle = -135;
         }
     }
@@ -238,14 +238,17 @@ function moureNau(angle, x, y) {
         if (!tecles.esquerra) return;
 
 
-    if(destructor.xPos + x < WIDTH - 20 && destructor.xPos + x > 20)  destructor.xPos += x;
-    
-    if( destructor.yPos + y < HEIGHT - 20 && destructor.yPos + y > 20) destructor.yPos += y;
+    if (destructor.xPos + x < WIDTH - 20 && destructor.xPos + x > 20) destructor.xPos += x;
+
+    if (destructor.yPos + y < HEIGHT - 20 && destructor.yPos + y > 20) destructor.yPos += y;
 
     destructor.x = x;
     destructor.y = y;
 
-    $(destructor.nau).attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) rotate(${angle})`);
+    // Apliquem la rotació al centre de la nau
+    var rotateTransform = "rotate(" + angle + " " + 19 + " " + 19 + ")";
+
+    $(destructor.nau).attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) ${rotateTransform}`);
     detectarEstrella();
 
     socket.send(JSON.stringify({
@@ -291,19 +294,19 @@ function countdownTurboActivat() {
 
     intervalTurbo = setInterval(() => {
         $('#countdownTurbo').html(countdown--);
-    },1000)
-  }
+    }, 1000)
+}
 
-function countdownTurboCooldown(){
+function countdownTurboCooldown() {
     var countdown = 10;
 
     $('#countdownTurbo').html(countdown--);
 
     $('#mostrarTurbo').html("El turbo s'està recargant");
 
-    intervalCooldown = setInterval(() =>{
+    intervalCooldown = setInterval(() => {
         $('#countdownTurbo').html(countdown--);
-    },1000)
+    }, 1000)
 
 }
 
@@ -317,7 +320,7 @@ function turbo() {
         clearInterval(intervalTurbo);
         countdownTurboCooldown();
     }, 5000);
-    
+
     setTimeout(() => {
         destructor.turbo = true;
         clearInterval(intervalCooldown);
@@ -327,4 +330,3 @@ function turbo() {
 
     calcMoviment();
 }
-

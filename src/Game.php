@@ -57,9 +57,8 @@ use StarHunters\Settings;
         if($missatge->accio == 'borrarEstrella'){
             $resposta['accio'] = 'borrarEstrella';
             $resposta['index'] = $missatge->index;
-            $this->broadcast(json_encode($resposta),[$from]);
-
             $this -> settings -> setEstrelles();
+            $this->broadcast(json_encode($resposta),[$from]);
 
         } elseif ($missatge->accio == 'novaNau') {
             // Guardem les coordenades de la nau

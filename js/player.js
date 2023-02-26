@@ -115,9 +115,10 @@ $(function () {
 
 
 function detectarEstrella() {
+    var nau = document.getElementById('nau');
     estrelles.forEach((estrella, index) => {
         try {
-            if (intersectRect(estrella, $('#nau'))) {
+            if (intersectRect(estrella, nau)) {
                 estrella.remove();
                 socket.send(JSON.stringify({
                     accio: 'borrarEstrella',

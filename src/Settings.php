@@ -38,6 +38,14 @@
             return $this->players;
         }
 
+        public function getPlayer($playerConn){
+            foreach ($this->players as $player) {
+                if ($player->getClient() == $playerConn) {
+                    return $player;
+                }
+            }
+        }
+
         public function setHeight($height){
             $this->height = $height;
         }
@@ -52,6 +60,16 @@
 
         public function addPlayer($player){
             array_push($this->players, $player);
+        }
+
+        public function removePlayer($playerConn){
+            foreach ($this->players as $player) {
+                if ($player->getClient() == $playerConn) {
+                    $index = array_search($player, $this->players);
+                    array_splice($this->players,$index,1);
+                }
+            }
+
         }
 
         public function flush_players(){

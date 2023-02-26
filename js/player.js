@@ -35,8 +35,8 @@ class Destructor {
         this.speed = 4;
         this.turbo = true;
         // Moure la nau a la posició inicial
-        this.nau = document.getElementById("nau");
-        this.nau.setAttribute("transform", "translate(" + this.xPos + " " + this.yPos + ")");
+        this.nau = $('#nau');
+        this.nau.attr("transform", "translate(" + this.xPos + " " + this.yPos + ")");
 
     }
 }
@@ -92,7 +92,7 @@ $(function () {
             estrelles[0].remove();
             estrelles.splice(0, 1);
         } else if (m.accio == 'nauEnemiga') {
-            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
+            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${360}" y="${400}" />`;
         } else if (m.accio == 'jugadorDesconnectat'){
             document.getElementById(m.jugador).remove();
         }
@@ -111,7 +111,7 @@ $(function () {
 function detectarEstrella() {
     estrelles.forEach((estrella, index) => {
         try {
-            if (intersectRect(estrella, destructor.nau)) {
+            if (intersectRect(estrella, $('#nau'))) {
                 estrella.remove();
                 socket.send(JSON.stringify({
                     accio: 'borrarEstrella',
@@ -230,7 +230,7 @@ function calcMoviment() {
     clearInterval(interval);
 
     interval = setInterval(() => {
-        moureNau(angle, x, y)
+        moureNau(angle, x, y);
     }, 20);
 
 
@@ -254,18 +254,17 @@ function moureNau(angle, x, y) {
 
     destructor.x = x;
     destructor.y = y;
-
+    
     // Apliquem la rotació al centre de la nau
     var rotateTransform = "rotate(" + angle + " " + 19 + " " + 19 + ")";
-
-    $(destructor.nau).attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) ${rotateTransform}`);
+    $('#nau').attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) ${rotateTransform}`);
     detectarEstrella();
 
-    socket.send(JSON.stringify({
-        accio: 'movimentNau',
-        x: destructor.xPos,
-        y: destructor.yPos
-    }));
+    // socket.send(JSON.stringify({
+    //     accio: 'movimentNau',
+    //     x: destructor.xPos,
+    //     y: destructor.yPos
+    // }));
 
 }
 

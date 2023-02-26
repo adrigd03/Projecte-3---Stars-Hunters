@@ -16,9 +16,7 @@ use StarHunters\Settings;
     }
 
     public function onOpen(ConnectionInterface $conn) {
-        if(empty($this->clients)){
-            $this->admin = $conn;
-        }
+        
         $this->clients->attach($conn);
         $this->settings->addPlayer($conn);
 

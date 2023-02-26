@@ -18,15 +18,24 @@ use StarHunters\Settings;
     public function onOpen(ConnectionInterface $conn) {
         
         $this->clients->attach($conn);
-        $this->settings->addPlayer($conn);
+        
 
         echo "S'ha unit un jugador" . $conn->resourceId . "\n";
-        
+
+        $player = new Player($conn, false);
+        $player->setNom('jugador' . $conn->resourceId);
+        $this->settings->addPlayer($player);
+
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
         if($msg == 'admin'){
             $this->admin = $from;
+            foreach ($this->settings->getPlayers() as $player) {
+                if ($player->getClient()->resourceId === $from->resourceId) {
+                    $player->setAdmin();
+                }
+            }
         }
        
         if($from == $this->admin){
@@ -38,7 +47,6 @@ use StarHunters\Settings;
                     $this->broadcast(json_encode($resposta));
                     $this -> settings -> setEstrelles();
                     echo $this -> settings -> getEstrelles();
-
 
                 }
             }
@@ -52,12 +60,35 @@ use StarHunters\Settings;
             $this->broadcast(json_encode($resposta),[$from]);
 
             $this -> settings -> setEstrelles();
+
+        } elseif ($missatge->accio == 'novaNau') {
+            // Guardem les coordenades de la nau
+            $player = $this->settings->getPlayer($from);
+            $player->setCoords($missatge->coords);
+            
+            // Enviem a tots els jugadors la posició de la nau 
+            $resposta = array('accio' => 'nauEnemiga', 'id' => $player->getNom(), 'coords' => $missatge->coords);
+            $this->broadcast(json_encode($resposta), [$from]);
+            
+            // Enviem a la nova nau la posició dels jugadors que s'han connectat abans
+            foreach ($this->settings->getPlayers() as $p) {
+                if ($p->getClient()->resourceId != $from->resourceId) {
+                    $resposta = array('accio' => 'nauEnemiga', 'id' => $p->getNom(), 'coords' => $p->getCoords());
+                    $from->send(json_encode($resposta));
+                }
+            }
         }
 
         
     }
 
     public function onClose(ConnectionInterface $conn) {
+        $missatge = array(
+            'accio' => 'jugadorDesconnectat',
+            'jugador' => 'jugador'.$conn->resourceId
+        );
+        $player = $this->settings->removePlayer($conn);
+        $this->broadcast(json_encode($missatge));
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {

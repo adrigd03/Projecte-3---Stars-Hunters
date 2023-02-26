@@ -70,7 +70,13 @@ $(function () {
 
     socket.onopen = function (event) {
         console.log('Connection opened');
-        socket.send('hola');
+        socket.send(JSON.stringify({
+            accio: 'novaNau',
+            coords: {
+                x: destructor.xPos,
+                y: destructor.yPos
+            }
+        }));
     };
 
     socket.onmessage = function (e) {
@@ -85,6 +91,10 @@ $(function () {
         } else if (m.accio == 'estrellaCaducada') {
             estrelles[0].remove();
             estrelles.splice(0, 1);
+        } else if (m.accio == 'nauEnemiga') {
+            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
+        } else if (m.accio == 'jugadorDesconnectat'){
+            document.getElementById(m.jugador).remove();
         }
     };
 

@@ -2,6 +2,7 @@
     namespace StarHunters;
 
     class Player{
+        protected $nom;
         protected $client;
         protected $admin;
         protected $coords;
@@ -30,12 +31,20 @@
             return $this->stars;
         }
 
+        public function getNom(){
+            return $this->nom;
+        }
+
+        public function setNom($nom){
+            $this->nom = $nom;
+        }
+
         public function setClient($client){
             $this->client = $client;
         }
 
-        public function setAdmin($admin){
-            $this->admin = $admin;
+        public function setAdmin(){
+            $this->admin = true;
         }
 
         public function setCoords($coords){

@@ -77,9 +77,14 @@ use StarHunters\Settings;
                     $from->send(json_encode($resposta));
                 }
             }
-        }
+        } elseif ($missatge->accio == 'movimentNau') {
+            $player = $this->settings->getPlayer($from);
+            $player->setCoords($missatge->coords);
 
-        
+            // Enviem a tots els jugadors la posició de la nau 
+            $resposta = array('accio' => 'nauMoguda', 'id' => $player->getNom(), 'coords' => $missatge->coords, 'angle' => $missatge->angle);
+            $this->broadcast(json_encode($resposta), [$from]);
+        }
     }
 
     public function onClose(ConnectionInterface $conn) {

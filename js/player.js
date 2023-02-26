@@ -92,9 +92,15 @@ $(function () {
             estrelles[0].remove();
             estrelles.splice(0, 1);
         } else if (m.accio == 'nauEnemiga') {
-            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${360}" y="${400}" />`;
+            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
         } else if (m.accio == 'jugadorDesconnectat'){
             document.getElementById(m.jugador).remove();
+        } else if (m.accio == 'nauMoguda'){
+            document.getElementById(m.id).removeAttribute('x');
+            document.getElementById(m.id).removeAttribute('y');
+            // Apliquem la rotació al centre de la nau
+            var rotateTransform = "rotate(" + m.angle + " " + 19 + " " + 19 + ")";
+            $(`#${m.id}`).attr('transform', ` translate(${m.coords.x} ${m.coords.y}) ${rotateTransform}`);
         }
     };
 
@@ -260,11 +266,14 @@ function moureNau(angle, x, y) {
     $('#nau').attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) ${rotateTransform}`);
     detectarEstrella();
 
-    // socket.send(JSON.stringify({
-    //     accio: 'movimentNau',
-    //     x: destructor.xPos,
-    //     y: destructor.yPos
-    // }));
+    socket.send(JSON.stringify({
+        accio: 'movimentNau',
+        coords: {
+            x: destructor.xPos,
+            y: destructor.yPos
+        },
+        angle: angle
+    }));
 
 }
 

@@ -9,6 +9,7 @@ use StarHunters\Settings;
     protected $clients;
     protected $admin;
     protected $settings;
+    protected $gameStarted = false;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
@@ -16,16 +17,22 @@ use StarHunters\Settings;
     }
 
     public function onOpen(ConnectionInterface $conn) {
-        
-        $this->clients->attach($conn);
-        
 
-        echo "S'ha unit un jugador" . $conn->resourceId . "\n";
+        if($this->gameStarted){
+            $conn->close();
+        } else {
 
-        $player = new Player($conn, false);
-        $player->setNom('jugador' . $conn->resourceId);
-        $this->settings->addPlayer($player);
+            
+            $this->clients->attach($conn);
+            
 
+            echo "S'ha unit un jugador" . $conn->resourceId . "\n";
+            
+            $player = new Player($conn, false);
+            $player->setNom('jugador' . $conn->resourceId);
+            $this->settings->addPlayer($player);
+            
+        }
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
@@ -83,6 +90,31 @@ use StarHunters\Settings;
             // Enviem a tots els jugadors la posició de la nau 
             $resposta = array('accio' => 'nauMoguda', 'id' => $player->getNom(), 'coords' => $missatge->coords, 'angle' => $missatge->angle);
             $this->broadcast(json_encode($resposta), [$from]);
+
+            // Si arriba un missatge amb la acció settings, configurem la partida
+        } else if ($missatge->accio == 'settings' && $from == $this->admin) {
+            $this->settings->setWidth($missatge->width);
+            $this->settings->setHeight($missatge->height);
+            $this->settings->setStars($missatge->n_estrelles);
+
+            $resposta = array(
+                'accio' => 'settings',
+                'width' => $this->settings->getWidth(),
+                'height' => $this->settings->getHeight()
+            );
+            $this->broadcast(json_encode($resposta));
+        } else if ($missatge->accio == 'engegar' && $from == $this->admin) {
+            $this->gameStarted = true;
+            $resposta = array(
+                'accio' => 'engegar'
+            );
+            $this->broadcast(json_encode($resposta));
+        } else if ($missatge->accio == 'aturar' && $from == $this->admin) {
+            $this->gameStarted = false;
+            $resposta = array(
+                'accio' => 'aturar'
+            );
+            $this->broadcast(json_encode($resposta));
         }
     }
 
@@ -91,7 +123,9 @@ use StarHunters\Settings;
             'accio' => 'jugadorDesconnectat',
             'jugador' => 'jugador'.$conn->resourceId
         );
-        $player = $this->settings->removePlayer($conn);
+        $this->settings->removePlayer($conn);
+        $this->clients->detach($conn);
+
         $this->broadcast(json_encode($missatge));
     }
 

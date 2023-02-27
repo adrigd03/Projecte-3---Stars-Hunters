@@ -5,8 +5,8 @@
 // Alumnes: Adrián García Domínguez, Sergi Triadó
 ///////////////////////////////////////////////////////////
 
-const WIDTH = 640;
-const HEIGHT = 480
+let WIDTH = 640;
+let HEIGHT = 480;
 let socket;
 let estrelles = [];
 let destructor;
@@ -20,9 +20,6 @@ let tecles = {
     up: false,
     down: false
 };
-
-$(document).keydown(detectarKeyDown).keyup(detectarKeyUp).click();
-
 
 class Destructor {
 
@@ -100,6 +97,23 @@ $(function () {
             // Apliquem la rotació al centre de la nau
             var rotateTransform = "rotate(" + m.angle + " " + 19 + " " + 19 + ")";
             $(`#${m.id}`).attr('transform', ` translate(${m.coords.x} ${m.coords.y}) ${rotateTransform}`);
+        } else if (m.accio == 'settings') {
+            WIDTH = m.width;
+            HEIGHT = m.height;
+
+            let joc = document.getElementById("joc");
+
+            joc.setAttribute("width", WIDTH);
+            joc.setAttribute("height", HEIGHT);
+            joc.setAttribute("viewBox", "0 0 " + WIDTH + " " + HEIGHT);
+
+            var camp = document.getElementById("areaJoc").style;
+            camp.width = WIDTH + "px";
+            camp.height = HEIGHT + "px";
+        } else if(m.accio == 'engegar'){
+            engegarJoc();
+        } else if(m.accio == 'aturar') {
+            aturarJoc();
         }
     };
 
@@ -108,7 +122,7 @@ $(function () {
     };
 
     socket.onclose = function (event) {
-        console.log('Connection closed');
+        document.getElementById('nau').remove();
     };
 });
 
@@ -347,4 +361,13 @@ function turbo() {
     }, 15000);
 
     calcMoviment();
+}
+
+function engegarJoc(){
+    $(document).keydown(detectarKeyDown).keyup(detectarKeyUp);
+}
+
+function aturarJoc(){
+    $(document).off('keydown');
+    $(document).off('keyup');
 }

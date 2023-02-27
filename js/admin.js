@@ -1,30 +1,40 @@
 "use strict";
 
 document.getElementById("administrar").addEventListener("click", administrar, false);
-document.getElementById("aturar").addEventListener("click", aturar, false);
 $('#estrellas').on('click',estrella);
+$('#engegar').on('click', engegar_aturar);
 
 let intervalEstrella;
 let socket;
 
 function administrar(){
-    WIDTH = document.getElementById("amplada").value;
-    HEIGHT = document.getElementById("alcada").value;
-    let joc = document.getElementById("joc");
 
-    joc.setAttribute("width", WIDTH);
-    joc.setAttribute("height", HEIGHT);
-    joc.setAttribute("viewBox", "0 0 " + WIDTH + " " + HEIGHT);
+    let WIDTH = document.getElementById("amplada").value;
+    let HEIGHT = document.getElementById("alcada").value;
+    let numEstrelles = document.getElementById("n_estrelles").value;
 
-    var camp = document.getElementById("camp").style;
-    camp.width = WIDTH + "px";
-    camp.height = HEIGHT + "px";
-
-
+    socket.send(JSON.stringify({
+        accio: 'settings',
+        width: WIDTH,
+        height: HEIGHT,
+        n_estrelles: numEstrelles
+    }));
 }
 
-function aturar(){
+function engegar_aturar(){
     clearInterval(intervalEstrella);
+
+    if ($('#engegar').val() == 'Engegar') {
+        $('#engegar').val('Aturar');
+        socket.send(JSON.stringify({
+            accio: 'engegar'
+        }));
+    } else {
+        $('#engegar').val('Engegar');
+        socket.send(JSON.stringify({
+            accio: 'aturar'
+        }));
+    }
     //TODO reiniciar contador estrellas php
 }
 
@@ -45,6 +55,28 @@ $(function() {
 
     socket.onmessage = function(event) {
         var m = JSON.parse(event.data);
+        if (m.accio == 'settings') {
+            
+            let joc = document.getElementById("joc");
+
+            joc.setAttribute("width", m.width);
+            joc.setAttribute("height", m.height);
+            joc.setAttribute("viewBox", "0 0 " + m.width + " " + m.height);
+
+            var camp = document.getElementById("camp").style;
+            camp.width = m.width + "px";
+            camp.height = m.height + "px";
+        } else if (m.accio == 'nauEnemiga') {
+            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
+        } else if (m.accio == 'jugadorDesconnectat'){
+            document.getElementById(m.jugador).remove();
+        } else if (m.accio == 'nauMoguda'){
+            document.getElementById(m.id).removeAttribute('x');
+            document.getElementById(m.id).removeAttribute('y');
+            // Apliquem la rotació al centre de la nau
+            var rotateTransform = "rotate(" + m.angle + " " + 19 + " " + 19 + ")";
+            $(`#${m.id}`).attr('transform', ` translate(${m.coords.x} ${m.coords.y}) ${rotateTransform}`);
+        }
         console.log('Message received: ' + event.data);
     };
 

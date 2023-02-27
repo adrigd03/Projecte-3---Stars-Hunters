@@ -1,11 +1,11 @@
 "use strict";
 
 document.getElementById("administrar").addEventListener("click", administrar, false);
-$('#estrellas').on('click',estrella);
 $('#engegar').on('click', engegar_aturar);
 
 let intervalEstrella;
 let socket;
+let estrelles = [];
 
 function administrar(){
 
@@ -22,15 +22,19 @@ function administrar(){
 }
 
 function engegar_aturar(){
-    clearInterval(intervalEstrella);
-
-    if ($('#engegar').val() == 'Engegar') {
-        $('#engegar').val('Aturar');
+    
+    if ($('#engegar').html() == 'Engegar') {
+        $('#engegar').html('Aturar');
+        intervalEstrella = setInterval(()=> {socket.send('estrella')},5000);
         socket.send(JSON.stringify({
             accio: 'engegar'
         }));
     } else {
-        $('#engegar').val('Engegar');
+        $('#engegar').html('Engegar');
+        clearInterval(intervalEstrella);
+        estrelles.forEach((estrella) => {
+            estrella.remove();
+        });
         socket.send(JSON.stringify({
             accio: 'aturar'
         }));
@@ -38,11 +42,28 @@ function engegar_aturar(){
     //TODO reiniciar contador estrellas php
 }
 
-//Aquesta funció és trucarà al començar la partida
-function estrella() { 
-    intervalEstrella = setInterval(()=> {socket.send('estrella')},5000);
 
- }
+class Estrella {
+    constructor(x, y) {
+        // Inicialitzar valors
+
+        this.xPos = x; // Posició horitzontal de l'estrella
+        this.yPos = y; // Posició vertical de l'estrella
+
+        // Creem la el path de l'estrella i la coloquem
+        this.estrella = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        this.estrella.setAttributeNS(null, "d", "M115.5 104C116.5 102 118.5 102 119.5 104L124.5 113.5 135.5 115.5C137.5 116 138 117.5 136.5 119L129 127 130.5 139C130.5 140.5 130 141 128.5 140.5L117.5 135 106.5 140.5C105.5 141 104.5 140.5 104.5 139L106 127 98.5 119C97 117.5 97 116 99.5 115.5L110.5 113.5Z");
+        this.estrella.setAttributeNS(null, "stroke", "#000");
+        this.estrella.setAttributeNS(null, "stroke-width", 3);
+        this.estrella.setAttributeNS(null, "stroke-linecap", "round");
+        this.estrella.setAttributeNS(null, "fill", "#ff0");
+        this.estrella.setAttributeNS(null, "stroke-linejoin", "round");
+        this.estrella.setAttributeNS(null, 'name', 'estrella');
+        document.getElementById('joc').appendChild(this.estrella);
+        this.estrella.setAttribute("transform", "translate(" + this.xPos + " " + this.yPos + ")");
+        estrelles.push(this.estrella);
+    }
+}
 
 $(function() {
     socket = new WebSocket('ws://localhost:8080');
@@ -76,6 +97,15 @@ $(function() {
             // Apliquem la rotació al centre de la nau
             var rotateTransform = "rotate(" + m.angle + " " + 19 + " " + 19 + ")";
             $(`#${m.id}`).attr('transform', ` translate(${m.coords.x} ${m.coords.y}) ${rotateTransform}`);
+        } else if (m.accio == 'estrella'){
+            new Estrella(m.x, m.y);
+        } else if (m.accio == 'borrarEstrella') {
+            estrelles[m.index].remove();
+            estrelles.splice(m.index, 1)
+
+        } else if (m.accio == 'estrellaCaducada') {
+            estrelles[0].remove();
+            estrelles.splice(0, 1);
         }
         console.log('Message received: ' + event.data);
     };

@@ -52,6 +52,7 @@ class Estrella {
         this.estrella.setAttributeNS(null, "stroke-linecap", "round");
         this.estrella.setAttributeNS(null, "fill", "#ff0");
         this.estrella.setAttributeNS(null, "stroke-linejoin", "round");
+        this.estrella.setAttributeNS(null, 'name', 'estrella');
         document.getElementById('joc').appendChild(this.estrella);
         this.estrella.setAttribute("transform", "translate(" + this.xPos + " " + this.yPos + ")");
         estrelles.push(this.estrella);
@@ -123,6 +124,7 @@ $(function () {
 
     socket.onclose = function (event) {
         document.getElementById('nau').remove();
+        alert("No et pots unir quan la partida ja ha començat!");
     };
 });
 
@@ -370,4 +372,7 @@ function engegarJoc(){
 function aturarJoc(){
     $(document).off('keydown');
     $(document).off('keyup');
+    estrelles.forEach((estrella) => {
+        estrella.remove();
+    });
 }

@@ -25,8 +25,11 @@
             return $this->estrelles;
         }
 
-    
-        public function setEstrelles(){
+        public function resetEstrelles(){
+            $this->estrelles = 0;
+        }
+
+        public function restarEstrella(){
             $this->estrelles--;
         }
 
@@ -80,7 +83,7 @@
             $posicio['accio'] = 'estrella';
             $posicio['x'] = rand(5,$this->width);
             $posicio['y'] = rand(5,$this->height);
-            $this ->estrelles++;
+            $this->estrelles++;
              return json_encode($posicio);
         }
 

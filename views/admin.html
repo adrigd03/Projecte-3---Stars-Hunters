@@ -4,9 +4,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 	<title>Star Hunters</title>
 	<meta charset="UTF-8" />
-	<style>
-		#camp{border: 1px solid black;margin:0;padding:0;width:640px;height:480px;}
-	</style>
 	<script defer src="../js/globals.js"></script>
 	<script defer src="../js/admin.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -29,17 +26,14 @@
                     <input class="col-6" id="n_estrelles" name="n_estrelles" type="number" min="5" max="10" value="5">
                 </div>
                 <div class="row">
-                    <button type="button" id="administrar" class="btn btn-secondary col-5 m-1">Administrar</button>
-                    <button type="button" id="aturar" class="btn btn-secondary col-5 m-1">Aturar</button>
+                    <button type="button" id="administrar" class="btn btn-secondary col-3 m-1">Administrar</button>
+                    <button type="button" id="engegar" class="btn btn-secondary col-3 m-1" value="Engegar"></button>
+                    <button type="button" id="estrellas" class="btn btn-secondary col-3 m-1">Iniciar Estrellas</button>
                 </div>
             </form>
-            <button id="estrellas">Iniciar Estrellas</button>
         </div>
         <div id="camp" class="border border-1 border-white">
             <svg id="joc" width="640" height="480" viewbox="0 0 640 480">
-                <path id="nau" d="m19 12h-13v-4m-12 0v4h-13m22-12-2-10h-2l-2 10zm3 18v-2h13v-16m0 6-11-6-4-19h-8l-4 19-11 6m0-6v16h13v2m4-11h4v12h-4z" stroke="#00c000" stroke-width="2" fill="none"></path>
-                <path id="alien" d="M -2,-5 H -10 V -1 H -2 Z M 10,-5 H 2 V -1 H 10 Z M -2,3 V 7 H 2 V 3 Z M 14,7 V 11 H 20 V 15 H 12 V 11 H 8 V 7 H 4 V 11 H -4 V 7 H -8 V 11 H -12 V 15 H -20 V 11 H -14 V 7 H -10 V 3 H -20 V -7 H -16 V -11 H -8 V -15 H 8 V -11 H 16 V -7 H 20 V 3 H 10 V 7" fill="#c00000"></path>
-                <g id="aliens"></g>
             </svg>
         </div>
     </div>

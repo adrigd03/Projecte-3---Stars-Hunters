@@ -18,7 +18,7 @@ use StarHunters\Settings;
 
     public function onOpen(ConnectionInterface $conn) {
 
-        if($this->gameStarted){
+        if($this->gameStarted === true){
             $conn->close();
         } else {
 
@@ -49,11 +49,11 @@ use StarHunters\Settings;
             //Si es el missatge diu estrella enviar posició de estrella a tots els jugadors
             if($msg == 'estrella'){
                 $this->broadcast($this->settings->posEstrella());
-                if($this -> settings -> getEstrelles() > 3){
+                if($this->settings->getEstrelles() > 3){
                     $resposta['accio'] = "estrellaCaducada";
                     $this->broadcast(json_encode($resposta));
-                    $this -> settings -> setEstrelles();
-                    echo $this -> settings -> getEstrelles();
+                    $this->settings->restarEstrella();
+                    echo $this->settings->getEstrelles();
 
                 }
             }
@@ -61,14 +61,14 @@ use StarHunters\Settings;
         }
         //Comprobem si el missatge conté on objecte amb la accio BorrarEstrella i fem u broadcast de la estrella a borrar
         $missatge = json_decode($msg);
-        if($missatge->accio == 'borrarEstrella'){
+        if(isset($missatge->accio) && $missatge->accio == 'borrarEstrella'){
             $resposta['accio'] = 'borrarEstrella';
             $resposta['index'] = $missatge->index;
             $this->broadcast(json_encode($resposta),[$from]);
 
-            $this -> settings -> setEstrelles();
+            $this->settings->restarEstrella();
 
-        } elseif ($missatge->accio == 'novaNau') {
+        } elseif (isset($missatge->accio) && $missatge->accio == 'novaNau') {
             // Guardem les coordenades de la nau
             $player = $this->settings->getPlayer($from);
             $player->setCoords($missatge->coords);
@@ -84,7 +84,7 @@ use StarHunters\Settings;
                     $from->send(json_encode($resposta));
                 }
             }
-        } elseif ($missatge->accio == 'movimentNau') {
+        } elseif (isset($missatge->accio) && $missatge->accio == 'movimentNau') {
             $player = $this->settings->getPlayer($from);
             $player->setCoords($missatge->coords);
 
@@ -93,7 +93,7 @@ use StarHunters\Settings;
             $this->broadcast(json_encode($resposta), [$from]);
 
             // Si arriba un missatge amb la acció settings, configurem la partida
-        } else if ($missatge->accio == 'settings' && $from == $this->admin) {
+        } else if (isset($missatge->accio) && $missatge->accio == 'settings' && $from == $this->admin) {
             $this->settings->setWidth($missatge->width);
             $this->settings->setHeight($missatge->height);
             $this->settings->setStars($missatge->n_estrelles);
@@ -104,14 +104,15 @@ use StarHunters\Settings;
                 'height' => $this->settings->getHeight()
             );
             $this->broadcast(json_encode($resposta));
-        } else if ($missatge->accio == 'engegar' && $from == $this->admin) {
+        } else if (isset($missatge->accio) && $missatge->accio == 'engegar' && $from == $this->admin) {
             $this->gameStarted = true;
             $resposta = array(
                 'accio' => 'engegar'
             );
             $this->broadcast(json_encode($resposta));
-        } else if ($missatge->accio == 'aturar' && $from == $this->admin) {
+        } else if (isset($missatge->accio) && $missatge->accio == 'aturar' && $from == $this->admin) {
             $this->gameStarted = false;
+            $this->settings->resetEstrelles();
             $resposta = array(
                 'accio' => 'aturar'
             );

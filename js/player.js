@@ -28,10 +28,9 @@ class Destructor {
 
     constructor() {
         // Inicialitzar valors
-        this.xPos = 320; // Posició horitzontal de la nau
-        this.yPos = 400; // Posició vertical de la nau
-        this.x = 0;
-        this.y = 0;
+        this.xPos = Math.random() * (WIDTH - 5) + 5; // Posició horitzontal de la nau
+        this.yPos = Math.random() * (HEIGHT - 5) + 5; // Posició vertical de la nau
+        
         this.speed = 4;
         this.turbo = true;
         // Moure la nau a la posició inicial

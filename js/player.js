@@ -270,9 +270,9 @@ function moureNau(angle, x, y) {
         if (!tecles.esquerra) return;
 
 
-    if (destructor.xPos + x < WIDTH - 20 && destructor.xPos + x > 20) destructor.xPos += x;
+    if ((destructor.xPos + x) < (WIDTH - 30) && (destructor.xPos + x) > 20) destructor.xPos += x;
 
-    if (destructor.yPos + y < HEIGHT - 20 && destructor.yPos + y > 20) destructor.yPos += y;
+    if ((destructor.yPos + y) < (HEIGHT - 30) && (destructor.yPos + y) > 20) destructor.yPos += y;
 
     destructor.x = x;
     destructor.y = y;

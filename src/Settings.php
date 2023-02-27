@@ -81,8 +81,8 @@
         //Calcula la posició de les següents estrelles que apareixeran
          public function posEstrella(){
             $posicio['accio'] = 'estrella';
-            $posicio['x'] = rand(5,$this->width);
-            $posicio['y'] = rand(5,$this->height);
+            $posicio['x'] = rand(30,$this->width-30);
+            $posicio['y'] = rand(30,$this->height - 30);
             $this->estrelles++;
              return json_encode($posicio);
         }

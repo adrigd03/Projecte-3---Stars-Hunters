@@ -33,10 +33,12 @@ function engegar_aturar(){
 }
 
 function engegar() {
+    
     intervalEstrella = setInterval(() => { socket.send('estrella') }, 5000);
     socket.send(JSON.stringify({
         accio: 'engegar'
     }));
+    socket.send('estrella');
 }
 
 function aturar() {
@@ -73,7 +75,9 @@ class Estrella {
 }
 
 $(function() {
-    socket = new WebSocket('ws://192.168.0.22:8180');
+    // Ip que vam utilitzar a la presentació
+    // socket = new WebSocket('ws://10.92.254.198:8180');
+    socket = new WebSocket('ws://localhost:8180');
     console.log(socket);
 
     socket.onopen = function(event) {

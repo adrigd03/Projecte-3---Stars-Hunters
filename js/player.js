@@ -21,6 +21,8 @@ let tecles = {
     down: false
 };
 
+$('#unirte').on('click',() => {location.reload()});
+
 class Nau {
 
     constructor() {
@@ -63,7 +65,9 @@ class Estrella {
 nau = new Nau();
 
 $(function () {
-    socket = new WebSocket('ws://192.168.0.22:8180');
+    // Ip que vam utilitzar a la presentació
+    // socket = new WebSocket('ws://10.92.254.198:8180');
+    socket = new WebSocket('ws://localhost:8180');
 
     socket.onopen = function (event) {
         console.log('Connection opened');

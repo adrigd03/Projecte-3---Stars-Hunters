@@ -114,9 +114,9 @@ $(function() {
             estrelles[0].remove();
             estrelles.splice(0, 1);
         } else if(m.accio == 'guanyador'){
+            let missatge = missatgeGuanyador(m);
+            alert(missatge);
             aturar();
-            alert(`El guanyador és: ${m.jugador}!!!`);
-            location.reload();
         } else if(m.accio == 'error'){
             alert(m.missatge);
             window.location.href = "../";
@@ -132,3 +132,12 @@ $(function() {
         console.log('Connection closed');
     };
 });
+
+function missatgeGuanyador(m){
+    let missatge = `El guanyador és: ${m.jugador}!!!`;
+    m.puntuacions.forEach(element => {
+        missatge += `\n${element.jugador} - ${element.puntuacio} estrelles!`; 
+    });
+    console.log(missatge);
+    return missatge;
+}

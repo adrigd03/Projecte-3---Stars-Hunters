@@ -116,8 +116,9 @@ $(function () {
         } else if(m.accio == 'aturar') {
             aturarJoc();
         } else if(m.accio == 'guanyador'){
+            let missatge = missatgeGuanyador(m);
+            alert(missatge);
             aturarJoc();
-            alert(`El guanyador és: ${m.jugador}!!!`);
             location.reload();
         } else if(m.accio == 'nom'){
             $('#nom').html(m.nom);
@@ -384,4 +385,13 @@ function aturarJoc(){
     estrelles.forEach((estrella) => {
         estrella.remove();
     });
+}
+
+function missatgeGuanyador(m){
+    let missatge = `El guanyador és: ${m.jugador}!!!`;
+    m.puntuacions.forEach(element => {
+        missatge += `\n${element.jugador} - ${element.puntuacio} estrelles!`; 
+    });
+    console.log(missatge);
+    return missatge;
 }

@@ -9,7 +9,7 @@ let WIDTH = 640;
 let HEIGHT = 480;
 let socket;
 let estrelles = [];
-let destructor;
+let nau;
 let interval;
 let intervalCooldown;
 let intervalTurbo;
@@ -21,7 +21,7 @@ let tecles = {
     down: false
 };
 
-class Destructor {
+class Nau {
 
     constructor() {
         // Inicialitzar valors
@@ -60,7 +60,7 @@ class Estrella {
 }
 
 // Crear la nau 
-destructor = new Destructor();
+nau = new Nau();
 
 $(function () {
     socket = new WebSocket('ws://localhost:8080');
@@ -70,8 +70,8 @@ $(function () {
         socket.send(JSON.stringify({
             accio: 'novaNau',
             coords: {
-                x: destructor.xPos,
-                y: destructor.yPos
+                x: nau.xPos,
+                y: nau.yPos
             }
         }));
     };
@@ -172,7 +172,7 @@ function intersectRect(r1, r2) {
 function detectarKeyDown(e) {
 
     if (e.shiftKey) {
-        if (destructor.turbo) {
+        if (nau.turbo) {
             turbo();
         }
 
@@ -210,7 +210,7 @@ function calcMoviment() {
     let x = 0;
     let y = 0;
     let angle = 0;
-    let speed = destructor.speed;
+    let speed = nau.speed;
     if (tecles.dreta) {
         x += speed;
         angle = 90;
@@ -255,7 +255,7 @@ function calcMoviment() {
         }
     }
 
-    if ((x == 0 && y == 0) || (x == destructor.x && y == destructor.y)) return;
+    if ((x == 0 && y == 0) || (x == nau.x && y == nau.y)) return;
 
     clearInterval(interval);
 
@@ -278,23 +278,23 @@ function moureNau(angle, x, y) {
         if (!tecles.esquerra) return;
 
 
-    if ((destructor.xPos + x) < (WIDTH - 38) && (destructor.xPos + x) > 0) destructor.xPos += x;
+    if ((nau.xPos + x) < (WIDTH - 38) && (nau.xPos + x) > 0) nau.xPos += x;
 
-    if ((destructor.yPos + y) < (HEIGHT - 38) && (destructor.yPos + y) > 0) destructor.yPos += y;
+    if ((nau.yPos + y) < (HEIGHT - 38) && (nau.yPos + y) > 0) nau.yPos += y;
 
-    destructor.x = x;
-    destructor.y = y;
+    nau.x = x;
+    nau.y = y;
     
     // Apliquem la rotació al centre de la nau
     var rotateTransform = "rotate(" + angle + " " + 19 + " " + 19 + ")";
-    $('#nau').attr('transform', ` translate(${destructor.xPos} ${destructor.yPos}) ${rotateTransform}`);
+    $('#nau').attr('transform', ` translate(${nau.xPos} ${nau.yPos}) ${rotateTransform}`);
     detectarEstrella();
 
     socket.send(JSON.stringify({
         accio: 'movimentNau',
         coords: {
-            x: destructor.xPos,
-            y: destructor.yPos
+            x: nau.xPos,
+            y: nau.yPos
         },
         angle: angle
     }));
@@ -330,44 +330,45 @@ function detectarKeyUp(e) {
 }
 
 function countdownTurboActivat() {
-    var countdown = 5;
     $('#mostrarTurbo').html('TURBOO ACTIVAAAT')
-    $('#countdownTurbo').html(countdown--);
-
-    intervalTurbo = setInterval(() => {
-        $('#countdownTurbo').html(countdown--);
-    }, 1000)
+    depleteTurboBar();
+    
 }
 
 function countdownTurboCooldown() {
-    var countdown = 10;
-
-    $('#countdownTurbo').html(countdown--);
-
     $('#mostrarTurbo').html("El turbo s'està recargant");
-
-    intervalCooldown = setInterval(() => {
-        $('#countdownTurbo').html(countdown--);
-    }, 1000)
-
+    refillTurboBar();
 }
 
+function depleteTurboBar() {
+    var turboBar = $('#countdownTurbo');
+    turboBar.css('width', '100%');
+    turboBar.animate({width: '0%'}, 5000);
+  }
+  
+  // Function to refill the turbo bar
+  function refillTurboBar() {
+    var turboBar = $('#countdownTurbo');
+    turboBar.stop();
+    turboBar.css('width', '0%');
+    turboBar.animate({width: '100%'}, 10000);
+  }
+
 function turbo() {
-    destructor.turbo = false;
-    destructor.speed = 6;
+    nau.turbo = false;
+    nau.speed = 6;
     countdownTurboActivat();
 
     setTimeout(() => {
-        destructor.speed = 4;
+        nau.speed = 4;
         clearInterval(intervalTurbo);
         countdownTurboCooldown();
     }, 5000);
 
     setTimeout(() => {
-        destructor.turbo = true;
+        nau.turbo = true;
         clearInterval(intervalCooldown);
         $('#mostrarTurbo').html("El turbo està preparat");
-        $('#countdownTurbo').html("");
     }, 15000);
 
     calcMoviment();

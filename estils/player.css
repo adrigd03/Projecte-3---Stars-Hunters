@@ -10,7 +10,7 @@ body {
     height: 480px;
 }
 
-td {
+td, div {
     color: white;
     font-weight: bold;
 }
@@ -20,4 +20,12 @@ td {
     padding: 0;
     width: 640px;
     height: 480px;
+}
+
+#countdownTurbo{
+    background-color: yellow;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    
 }

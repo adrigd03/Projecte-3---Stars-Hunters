@@ -86,6 +86,24 @@
             }
         }
 
+        public function missatgeGuanyador($jugador){
+            $puntuacions = array();
+            foreach ($this->players as $player) {
+                if (!$player->isAdmin()) {
+                    array_push($puntuacions, array(
+                        'jugador' => $player->getNom(),
+                        'puntuacio' => $player->getStars()
+                    ));
+                }
+            }
+            $missatge = array(
+                'accio' => 'guanyador',
+                'jugador' => $jugador,
+                'puntuacions' => $puntuacions
+            );
+            return $missatge;
+        }
+
         //Calcula la posició de les següents estrelles que apareixeran
          public function posEstrella(){
             $posicio['accio'] = 'estrella';

@@ -85,10 +85,7 @@ use StarHunters\Settings;
 
             // Si es el cas ho comuniquem a tots i resetejem la partida
             if ($player->getStars() >= $this->settings->getStars()) {
-                $response = array(
-                    'accio' => 'guanyador',
-                    'jugador' => $player->getNom()
-                );
+                $response = $this->settings->missatgeGuanyador($player->getNom());
                 $this->broadcast(json_encode($response));
 
                 $this->settings->resetGame();

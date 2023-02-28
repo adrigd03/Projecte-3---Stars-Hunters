@@ -63,7 +63,7 @@ class Estrella {
 nau = new Nau();
 
 $(function () {
-    socket = new WebSocket('ws://localhost:8080');
+    socket = new WebSocket('ws://192.168.0.22:8180');
 
     socket.onopen = function (event) {
         console.log('Connection opened');
@@ -89,7 +89,9 @@ $(function () {
             estrelles[0].remove();
             estrelles.splice(0, 1);
         } else if (m.accio == 'nauEnemiga') {
-            document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
+            if(m.coords){
+                document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
+            }
         } else if (m.accio == 'jugadorDesconnectat'){
             document.getElementById(m.jugador).remove();
         } else if (m.accio == 'nauMoguda'){

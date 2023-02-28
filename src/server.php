@@ -12,7 +12,7 @@ use StarHunters\Game;
                 new Game()
             )
         ),
-        8080
+        8180
     );
 
     $server->run();

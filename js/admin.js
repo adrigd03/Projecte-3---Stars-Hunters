@@ -25,21 +25,28 @@ function engegar_aturar(){
     
     if ($('#engegar').html() == 'Engegar') {
         $('#engegar').html('Aturar');
-        intervalEstrella = setInterval(()=> {socket.send('estrella')},5000);
-        socket.send(JSON.stringify({
-            accio: 'engegar'
-        }));
+        engegar();
     } else {
         $('#engegar').html('Engegar');
-        clearInterval(intervalEstrella);
-        estrelles.forEach((estrella) => {
-            estrella.remove();
-        });
-        socket.send(JSON.stringify({
-            accio: 'aturar'
-        }));
+        aturar();
     }
-    //TODO reiniciar contador estrellas php
+}
+
+function engegar() {
+    intervalEstrella = setInterval(() => { socket.send('estrella') }, 5000);
+    socket.send(JSON.stringify({
+        accio: 'engegar'
+    }));
+}
+
+function aturar() {
+    clearInterval(intervalEstrella);
+    estrelles.forEach((estrella) => {
+        estrella.remove();
+    });
+    socket.send(JSON.stringify({
+        accio: 'aturar'
+    }));
 }
 
 
@@ -106,6 +113,13 @@ $(function() {
         } else if (m.accio == 'estrellaCaducada') {
             estrelles[0].remove();
             estrelles.splice(0, 1);
+        } else if(m.accio == 'guanyador'){
+            aturar();
+            alert(`El guanyador és: ${m.jugador}!!!`);
+            location.reload();
+        } else if(m.accio == 'error'){
+            alert(m.missatge);
+            window.location.href = "../";
         }
         console.log('Message received: ' + event.data);
     };

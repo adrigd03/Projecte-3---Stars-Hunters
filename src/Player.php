@@ -55,5 +55,9 @@
             $this->stars = $stars;
         }
 
+        public function score(){
+            $this->stars++;
+        }
+
     }
 ?>

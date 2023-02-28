@@ -5,7 +5,7 @@
 
         protected $height = 480;
         protected $width = 640;
-        protected $star_number;
+        protected $star_number = 5;
         protected $players;
         protected $estrelles = 0;
 
@@ -78,11 +78,19 @@
         public function flush_players(){
             $this->players = array();
         }
+
+        public function resetGame(){
+            $this->resetEstrelles();
+            foreach ($this->players as $player) {
+                $player->setStars(0);
+            }
+        }
+
         //Calcula la posició de les següents estrelles que apareixeran
          public function posEstrella(){
             $posicio['accio'] = 'estrella';
-            $posicio['x'] = rand(30,$this->width-30);
-            $posicio['y'] = rand(30,$this->height - 30);
+            $posicio['x'] = rand(0,$this->width - 40) - 95;
+            $posicio['y'] = rand(0,$this->height - 39) - 100;
             $this->estrelles++;
              return json_encode($posicio);
         }

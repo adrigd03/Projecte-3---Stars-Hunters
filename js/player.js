@@ -25,8 +25,8 @@ class Destructor {
 
     constructor() {
         // Inicialitzar valors
-        this.xPos = Math.random() * (WIDTH - 5) + 5; // Posició horitzontal de la nau
-        this.yPos = Math.random() * (HEIGHT - 5) + 5; // Posició vertical de la nau
+        this.xPos = Math.random() * (WIDTH - 38); // Posició horitzontal de la nau
+        this.yPos = Math.random() * (HEIGHT - 38); // Posició vertical de la nau
         
         this.speed = 4;
         this.turbo = true;
@@ -115,6 +115,15 @@ $(function () {
             engegarJoc();
         } else if(m.accio == 'aturar') {
             aturarJoc();
+        } else if(m.accio == 'guanyador'){
+            aturarJoc();
+            alert(`El guanyador és: ${m.jugador}!!!`);
+            location.reload();
+        } else if(m.accio == 'nom'){
+            $('#nom').html(m.nom);
+        } else if(m.accio == 'error'){
+            document.getElementById('nau').remove();
+            alert(m.missatge);
         }
     };
 
@@ -123,8 +132,7 @@ $(function () {
     };
 
     socket.onclose = function (event) {
-        document.getElementById('nau').remove();
-        alert("No et pots unir quan la partida ja ha començat!");
+        console.log(event);
     };
 });
 
@@ -145,7 +153,7 @@ function detectarEstrella() {
         } catch (error) {
 
         }
-    })
+    });
 
 }
 
@@ -270,9 +278,9 @@ function moureNau(angle, x, y) {
         if (!tecles.esquerra) return;
 
 
-    if ((destructor.xPos + x) < (WIDTH - 30) && (destructor.xPos + x) > 20) destructor.xPos += x;
+    if ((destructor.xPos + x) < (WIDTH - 38) && (destructor.xPos + x) > 0) destructor.xPos += x;
 
-    if ((destructor.yPos + y) < (HEIGHT - 30) && (destructor.yPos + y) > 20) destructor.yPos += y;
+    if ((destructor.yPos + y) < (HEIGHT - 38) && (destructor.yPos + y) > 0) destructor.yPos += y;
 
     destructor.x = x;
     destructor.y = y;

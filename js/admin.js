@@ -7,6 +7,7 @@ let intervalEstrella;
 let socket;
 let estrelles = [];
 
+// funció que s'executa amb el botó administrar, agafa els valors dels inputs i els envia al servidor
 function administrar(){
 
     let WIDTH = document.getElementById("amplada").value;
@@ -21,6 +22,7 @@ function administrar(){
     }));
 }
 
+// Funció que s'executa amb el botó de engegar/aturar
 function engegar_aturar(){
     
     if ($('#engegar').html() == 'Engegar') {
@@ -32,6 +34,7 @@ function engegar_aturar(){
     }
 }
 
+// Funció per engegar la partida si no ha començat
 function engegar() {
     
     intervalEstrella = setInterval(() => { socket.send('estrella') }, 5000);
@@ -41,6 +44,7 @@ function engegar() {
     socket.send('estrella');
 }
 
+// Funció per aturar la partida si ja ha començat
 function aturar() {
     clearInterval(intervalEstrella);
     estrelles.forEach((estrella) => {
@@ -87,6 +91,7 @@ $(function() {
 
     socket.onmessage = function(event) {
         var m = JSON.parse(event.data);
+        // Si rebem el missatge settings del servidor, canviem els valors que toquin
         if (m.accio == 'settings') {
             
             let joc = document.getElementById("joc");
@@ -98,31 +103,37 @@ $(function() {
             var camp = document.getElementById("camp").style;
             camp.width = m.width + "px";
             camp.height = m.height + "px";
+        // Si és nauEnemiga, creem una nau enemiga
         } else if (m.accio == 'nauEnemiga') {
             document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
         } else if (m.accio == 'jugadorDesconnectat'){
             if(document.getElementById(m.jugador)){
                 document.getElementById(m.jugador).remove();
             }
+        // Si es nau moguda, la desplacem
         } else if (m.accio == 'nauMoguda'){
             document.getElementById(m.id).removeAttribute('x');
             document.getElementById(m.id).removeAttribute('y');
             // Apliquem la rotació al centre de la nau
             var rotateTransform = "rotate(" + m.angle + " " + 19 + " " + 19 + ")";
             $(`#${m.id}`).attr('transform', ` translate(${m.coords.x} ${m.coords.y}) ${rotateTransform}`);
+        // Si és estrella, creem una estrella
         } else if (m.accio == 'estrella'){
             new Estrella(m.x, m.y);
+        // Si es borrarEstrella, la borrem
         } else if (m.accio == 'borrarEstrella') {
             estrelles[m.index].remove();
             estrelles.splice(m.index, 1)
-
+        // Si es estrellaCaducada la borrem també
         } else if (m.accio == 'estrellaCaducada') {
             estrelles[0].remove();
             estrelles.splice(0, 1);
+        // Si és guanyador, generem el missatge, el mostrem per alert i aturem la partida
         } else if(m.accio == 'guanyador'){
             let missatge = missatgeGuanyador(m);
             alert(missatge);
             aturar();
+        // Si és error, el mostrem
         } else if(m.accio == 'error'){
             alert(m.missatge);
             window.location.href = "../";
@@ -139,11 +150,11 @@ $(function() {
     };
 });
 
+// Funció que genera el missatge guanyador
 function missatgeGuanyador(m){
     let missatge = `El guanyador és: ${m.jugador}!!!`;
     m.puntuacions.forEach(element => {
         missatge += `\n${element.jugador} - ${element.puntuacio} estrelles!`; 
     });
-    console.log(missatge);
     return missatge;
 }

@@ -82,28 +82,33 @@ $(function () {
 
     socket.onmessage = function (e) {
         let m = JSON.parse(e.data);
-        console.log(m)
+        // Si el missatge que rebem és estrella, creem una
         if (m.accio == 'estrella') {
             new Estrella(m.x, m.y);
+        // Si és borrarEstrella, la esborrem
         } else if (m.accio == 'borrarEstrella') {
             estrelles[m.index].remove();
             estrelles.splice(m.index, 1)
-
+        // Si és estrellaCaducada, l'esborrem també
         } else if (m.accio == 'estrellaCaducada') {
             estrelles[0].remove();
             estrelles.splice(0, 1);
+        // Si és nau enemiga, creem una nau a les posicions que ens digui el servidor
         } else if (m.accio == 'nauEnemiga') {
             if(m.coords){
                 document.getElementById('joc').innerHTML += `<image id="${m.id}" href="../assets/imatgesstarshunters/nau4.png" height="38" width="38" x="${m.coords.x}" y="${m.coords.y}" />`;
             }
+        // Si és jugadorDesconnectat, eliminem la nau, el servidor farà la resta
         } else if (m.accio == 'jugadorDesconnectat'){
             document.getElementById(m.jugador).remove();
+        // Si és nauMoguda, desplacem la nau
         } else if (m.accio == 'nauMoguda'){
             document.getElementById(m.id).removeAttribute('x');
             document.getElementById(m.id).removeAttribute('y');
             // Apliquem la rotació al centre de la nau
             var rotateTransform = "rotate(" + m.angle + " " + 19 + " " + 19 + ")";
             $(`#${m.id}`).attr('transform', ` translate(${m.coords.x} ${m.coords.y}) ${rotateTransform}`);
+        // Si és settings, canviem els valors del que toqui
         } else if (m.accio == 'settings') {
             WIDTH = m.width;
             HEIGHT = m.height;
@@ -117,17 +122,22 @@ $(function () {
             var camp = document.getElementById("areaJoc").style;
             camp.width = WIDTH + "px";
             camp.height = HEIGHT + "px";
+        // Si és engegar la partida, l'engeguem
         } else if(m.accio == 'engegar'){
             engegarJoc();
+        // Si és aturar, l'aturem
         } else if(m.accio == 'aturar') {
             aturarJoc();
+        // Si és guanyador, generem el missatge i el mostrem
         } else if(m.accio == 'guanyador'){
             let missatge = missatgeGuanyador(m);
             alert(missatge);
             aturarJoc();
             location.reload();
+        // Si és nom, el mostrem al div corresponent
         } else if(m.accio == 'nom'){
             $('#nom').html(m.nom);
+        // Si és error, el mostrem
         } else if(m.accio == 'error'){
             document.getElementById('nau').remove();
             alert(m.missatge);
@@ -143,7 +153,7 @@ $(function () {
     };
 });
 
-
+// Funció que gestiona si les naus toquen estrelles
 function detectarEstrella() {
     var nau = document.getElementById('nau');
     estrelles.forEach((estrella, index) => {
@@ -164,6 +174,7 @@ function detectarEstrella() {
 
 }
 
+// Funció que retorna true o false si interseccionen dos cossos
 function intersectRect(r1, r2) {
     var r1 = r1.getBoundingClientRect(); //BOUNDING BOX OF THE FIRST OBJECT
     var r2 = r2.getBoundingClientRect(); //BOUNDING BOX OF THE SECOND OBJECT
@@ -347,6 +358,7 @@ function countdownTurboCooldown() {
     refillTurboBar();
 }
 
+// Si fem turbo, animem la barra
 function depleteTurboBar() {
     var turboBar = $('#countdownTurbo');
     turboBar.css('width', '100%');
@@ -361,6 +373,7 @@ function depleteTurboBar() {
     turboBar.animate({width: '100%'}, 10000);
   }
 
+  // Gestionem el turbo
 function turbo() {
     nau.turbo = false;
     nau.speed = 6;
@@ -380,11 +393,11 @@ function turbo() {
 
     calcMoviment();
 }
-
+// Quan s'engega el joc, activem els listeners
 function engegarJoc(){
     $(document).keydown(detectarKeyDown).keyup(detectarKeyUp);
 }
-
+// Si l'aturem, desactivem els listeners i esborrem les estrelles
 function aturarJoc(){
     $(document).off('keydown');
     $(document).off('keyup');
@@ -392,7 +405,7 @@ function aturarJoc(){
         estrella.remove();
     });
 }
-
+// Missatge guanyador
 function missatgeGuanyador(m){
     let missatge = `El guanyador és: ${m.jugador}!!!`;
     m.puntuacions.forEach(element => {
